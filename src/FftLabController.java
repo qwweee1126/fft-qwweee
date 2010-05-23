@@ -136,11 +136,14 @@ class FftLabController implements Observer {
             }
         }
     }
+    public void updatedata() {
+        transform(1,fReal,fImag,gReal,gImag);
+    }
     private void initSamples() {
         //fReal.values[fReal.origin+1] = 1.0f;
         //transform(1,fReal,fImag,gReal,gImag);
         for (int i = 0 ; i < fReal.values.length ; i ++) {
-            fReal.values[i] = 200.0f;
+            fReal.values[i] = 0.0f;
         }
         transform(1,fReal,fImag,gReal,gImag);
     }
