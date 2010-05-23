@@ -29,6 +29,16 @@ class Samples extends Observable {
         }
         values = temp;
     }
+    public void setData(float[] data) {
+        if (data.length != values.length) {
+            System.out.println("not same length!");
+        } else {
+            for (int i = 0 ; i < data.length ; i ++) {
+                values[i] = data[i];
+            }
+        }
+        this.notifyObservers();
+    }
     public void notifyObservers() {
         setChanged();
         super.notifyObservers();
