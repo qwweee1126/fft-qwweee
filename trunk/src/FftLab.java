@@ -16,6 +16,7 @@ public class FftLab extends java.applet.Applet {
      * 
      */
     private static final long serialVersionUID = 1L;
+    public static int trange = 0;
     MainPanel mainPanel;
 	ControlPanel controlPanel;
 	float[] result;
@@ -40,7 +41,7 @@ public class FftLab extends java.applet.Applet {
 	}
 	private void initDB() {
 	    String query = "SELECT `flow`.`dOctets`, `flow`.`Stamp` FROM `10.10.32.154`.`flow` LIMIT 256;";
-	    query = "SELECT `flow`.`dOctets`, `flow`.`Stamp` FROM `10.10.32.154`.`flow` WHERE `flow`.`DstPort` = '6667';";
+	    query = "SELECT `flow`.`dOctets`, `flow`.`Stamp` FROM `project`.`flow` WHERE `flow`.`DstPort` = '6667' ORDER BY flow.Stamp ASC;";
         DatabaseFactory.setDatabaseSettings
         ("com.mysql.jdbc.Driver", "jdbc:mysql://localhost/project?useUnicode=true&characterEncoding=utf8",
                 "root", "ji394su3", 100);
@@ -54,26 +55,35 @@ public class FftLab extends java.applet.Applet {
         ResultSet rs = null;
         ArrayList<Data> list = new ArrayList<Data>();
         Date base = null, others = null;
-        int size = 0;
+        long size = 0;
+        int add = 1;
         try {
             con = DatabaseFactory.getInstance().getConnection();
             pstm = con.prepareStatement(query);
             rs = pstm.executeQuery();
             rs.next();
+            trange = 48000;
             if (rs.next()) {
-                Float data = rs.getFloat(1);
+                int data = rs.getInt(1);
                 base = rs.getTimestamp(2);
-                list.add(new Data(base.getMinutes()-base.getMinutes(), data.floatValue()));
-                System.out.println(base.toLocaleString()+"\t"+(base.getMinutes()-base.getMinutes()));
+                size = (base.getTime()-base.getTime())/trange + add;
+                list.add(new Data(size, data));
+                //System.out.println(data);
+                //System.out.println(base.toLocaleString()+"\t"+(base.getMinutes()-base.getMinutes()));
+                //value.add(new Integer((int) size));
+                //System.out.println(size/1000);
 //                list.add(new Data(base.getTime()-base.getTime(), data.floatValue()));
 //                System.out.println(base.toLocaleString()+"\t"+(base.getMinutes()-base.getMinutes()));
             }
             while (rs.next()) {
-                Float data = rs.getFloat(1);
+                int data = rs.getInt(1);
                 others = rs.getTimestamp(2);
-                list.add(new Data(others.getMinutes()-base.getMinutes(), data.floatValue()));
-                System.out.println(others.toLocaleString()+"\t"+(others.getMinutes()-base.getMinutes()));
-                size = others.getMinutes()-base.getMinutes();
+                size = (others.getTime()-base.getTime())/trange + add;
+                list.add(new Data(size, data));
+                //System.out.println(data);
+                //System.out.println(others.toLocaleString()+"\t"+(others.getMinutes()-base.getMinutes()));
+                //System.out.println(size/1000);
+                //size2 = b-a;
 //                list.add(new Data(others.getTime()-base.getTime(), data.floatValue()));
 //                System.out.println(others.toLocaleString()+"\t"+(others.getMinutes()-base.getMinutes()));
 //                size = (int) (others.getTime()-base.getTime());
@@ -89,15 +99,20 @@ public class FftLab extends java.applet.Applet {
         }
         int count = 0;
         while (true) {
-            if ( Math.pow(2, count)>= size ) {
+            if ( Math.pow(2, count)> size ) {
                 break;
             }
             count++;
         }
-        result = new float[(int) Math.round(Math.pow(2, count))];
+        size = count - 1;
+        System.out.println("count = "+((int) Math.round(Math.pow(2, size))));
+        System.out.println("list size = "+list.size());
+        result = new float[(int) Math.round(Math.pow(2, size))];
         for (int i = 0 ; i < list.size() ; i ++) {
-            result[(int)(list.get(i).index)] = list.get(i).value;
-            System.out.println(list.get(i).index);
+            if (list.get(i).index < result.length) {
+                result[(list.get(i).index)] = list.get(i).value;
+                System.out.println(list.get(i).index);
+            }
         }
 	}
 	@SuppressWarnings("deprecation")
@@ -124,7 +139,7 @@ public class FftLab extends java.applet.Applet {
 		fftLab.init();
 		fftLab.start();
 		frame.add("Center",fftLab);
-		frame.resize(1280,1024);
+		frame.resize(1024,768);
 		frame.show();
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

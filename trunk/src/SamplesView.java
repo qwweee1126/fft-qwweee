@@ -96,20 +96,32 @@ class SamplesView extends Canvas {
         int r = sampleRadius;
         int w = sampleWidth;
         int h = (int)(samples.values[i]*sampleScale);
+        int shiftpoint = 10;
+        if (((int)samples.values[i]) < 0) {
+            shiftpoint = (int) -Math.sqrt(h)-30;
+        }
         g.drawLine(x-w/2,y,x+w/2,y);
         g.drawLine(x,y,x,y+h);
         if (i==samples.origin) {
             g.drawOval(x-r,y+h-r,2*r,2*r);
-            //把點設為圓形
+            g.drawString(String.valueOf((int)(samples.values[i]+0.5)), x-r, y+h-r-shiftpoint);
+            //把點設為圓形 空心
         }
-        else {
+        else { //圓心實心
             g.fillOval(x-r,y+h-r,2*r+1,2*r+1);
+            g.drawString(String.valueOf((int)(samples.values[i]+0.5)), x-r, y+h-r-shiftpoint);
         }
     }
+    @SuppressWarnings("deprecation")
     private void drawSamples(Graphics g) {
+        int x = size().width / 2;
+        int y = (int) (sampleBase*1.8);
         for (int i=0; i<samples.values.length; ++i) {
             drawOneSample(g,i);
         }
+        String str = String.format("時間單位 %d ms", FftLab.trange);
+        x = x - str.length()*2;
+        g.drawString(str, x, y);
     }
     @SuppressWarnings("deprecation")
     private void updateDrawingSizes() {
