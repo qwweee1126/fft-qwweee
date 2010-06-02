@@ -138,6 +138,10 @@ class FftLabController implements Observer {
     }
     public void updatedata() {
         transform(1,fReal,fImag,gReal,gImag);
+        fReal.notifyObservers();
+        fImag.notifyObservers();
+        gReal.notifyObservers();
+        gImag.notifyObservers();
     }
     private void initSamples() {
         //fReal.values[fReal.origin+1] = 1.0f;

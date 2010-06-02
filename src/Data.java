@@ -1,12 +1,12 @@
 
 public class Data {
     public int index;
-    public float value;
-    public Data(int index, float value) {
+    public int value;
+    public Data(int index, int value) {
         this.index = index;
         this.value = value;
     }
-    public Data(long index, float value) {
+    public Data(long index, int value) {
         this.index = (int) index;
         this.value = value;
     }
